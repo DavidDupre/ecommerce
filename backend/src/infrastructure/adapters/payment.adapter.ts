@@ -11,14 +11,18 @@ export class PaymentAdapter implements PaymentService {
   private readonly privateKey: string;
   private readonly integrityKey: string;
 
-  constructor(private configService: ConfigService) {
-    this.baseUrl = this.configService.get<string>(
-      'WOMPI_API_URL',
-      'https://api-sandbox.wompi.co/v1',
-    );
-    this.publicKey = this.configService.get<string>('WOMPI_PUBLIC_KEY');
-    this.privateKey = this.configService.get<string>('WOMPI_PRIVATE_KEY');
-    this.integrityKey = this.configService.get<string>('WOMPI_INTEGRITY_KEY');
+  constructor(private readonly configService: ConfigService) {
+    const publicKey = this.configService.get<string>('WOMPI_PUBLIC_KEY');
+    const privateKey = this.configService.get<string>('WOMPI_PRIVATE_KEY');
+    const integrityKey = this.configService.get<string>('WOMPI_INTEGRITY_KEY');
+
+    if (!publicKey || !privateKey || !integrityKey) {
+      throw new Error('Missing Wompi configuration keys');
+    }
+
+    this.publicKey = publicKey;
+    this.privateKey = privateKey;
+    this.integrityKey = integrityKey;
   }
 
   async processPayment(
