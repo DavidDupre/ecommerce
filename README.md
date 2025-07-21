@@ -107,5 +107,5 @@ POST /transactions: Crear transacción PENDING.
 GET /transactions/:id: Ver detalle de transacción.
 
 Demo
-🌐 Frontend: https://main.d1yixiw7e2sukl.amplifyapp.com/products/
+🌐 Frontend: https://main.d1yixiw7e2sukl.amplifyapp.com
 🔗 Backend: http://ec2-54-210-169-255.compute-1.amazonaws.com:3000
