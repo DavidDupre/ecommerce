@@ -98,7 +98,7 @@ const About = () => {
                   <ul className="list-disc ml-5">
                     {transactionData.products.map((product, index) => (
                       <li key={index}>
-                        Producto ID: {product.productId}, Precio: ${product.price}, Cantidad:{' '}
+                        Producto: {product.name}, Precio: ${product.price}, Cantidad:{' '}
                         {product.quantity}
                       </li>
                     ))}
