@@ -6,23 +6,26 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "strictBindCallApply": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
     "paths": {
       "@core/*": ["src/core/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
       "@shared/*": ["src/shared/*"]
-    },
-    "include": ["src/**/*"]
-  }
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "test", "dist"]
 }
