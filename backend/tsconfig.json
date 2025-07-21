@@ -21,6 +21,7 @@
       "@core/*": ["src/core/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
       "@shared/*": ["src/shared/*"]
-    }
+    },
+    "include": ["src/**/*"]
   }
 }
