@@ -7,7 +7,7 @@ import {
   ProductRepository,
 } from '../../../core/ports/product.repository.port';
 import { ProductOrmEntity } from './product.orm-entity';
-import { Product } from '@core/entities/product.entity';
+import { Product } from '../../../core/entities/product.entity';
 
 @Injectable()
 export class TypeOrmProductRepository implements ProductRepository {
