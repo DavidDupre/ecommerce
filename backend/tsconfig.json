@@ -21,9 +21,9 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "paths": {
-      "@core/*": ["src/core/*"],
-      "@infrastructure/*": ["src/infrastructure/*"],
-      "@shared/*": ["src/shared/*"]
+      "@core/*": ["core/*"],
+      "@infrastructure/*": ["infrastructure/*"],
+      "@shared/*": ["shared/*"]
     }
   },
   "include": ["src/**/*"],
