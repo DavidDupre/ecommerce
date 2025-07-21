@@ -1,5 +1,5 @@
 // src/infrastructure/web/product.controller.ts
-import { ProductRepository } from '@core/ports/product.repository.port';
+import { ProductRepository } from '../../core/ports/product.repository.port';
 import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 
 @Controller('productos')
