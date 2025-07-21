@@ -1,8 +1,8 @@
 // src/infrastructure/web/product.controller.spec.ts
 import { Test } from '@nestjs/testing';
 import { ProductController } from './product.controller';
-import { ProductRepository } from '../../../core/ports/product.repository.port';
-import { Product } from '../../../core/entities/product.entity';
+import { ProductRepository } from '../../core/ports/product.repository.port';
+import { Product } from '../../core/entities/product.entity';
 
 describe('ProductController', () => {
   let productController: ProductController;
