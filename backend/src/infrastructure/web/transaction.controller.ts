@@ -2,7 +2,7 @@ import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ProcessPaymentUseCase } from '../../core/use-cases/process-payment.use-case';
 import { TransactionRepository } from '../../core/ports/transaction.repository.port';
 
-@Controller('onboarding/transaction')
+@Controller('transaction')
 export class TransactionController {
   constructor(
     private readonly processPaymentUseCase: ProcessPaymentUseCase,
