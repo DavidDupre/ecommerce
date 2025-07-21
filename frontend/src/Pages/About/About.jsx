@@ -17,15 +17,39 @@ const About = () => {
 
     setLoading(true);
     setError('');
+    setTransactionData(null);
 
     try {
       const response = await axios.get(
-        `https://ec2-54-210-169-255.compute-1.amazonaws.com:3000/transaction/${trackingNumber}`,
+        `https://ec2-54-210-169-255.compute-1.amazonaws.com/api/transaction/${trackingNumber}`,
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+        },
       );
 
-      setTransactionData(response.data.data);
+      if (response.data && response.data.data) {
+        setTransactionData(response.data.data);
+      } else {
+        setError('La respuesta del servidor no contiene datos válidos');
+      }
     } catch (error) {
-      setError('No se pudo encontrar la información de la compra.');
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          // Error del servidor (4xx, 5xx)
+          setError(error.response.data.message || 'Error en la solicitud');
+        } else if (error.request) {
+          // No se recibió respuesta
+          setError('El servidor no respondió. Intente nuevamente.');
+        } else {
+          // Error al configurar la solicitud
+          setError('Error al realizar la solicitud');
+        }
+      } else {
+        setError('Ocurrió un error inesperado');
+      }
     } finally {
       setLoading(false);
     }
