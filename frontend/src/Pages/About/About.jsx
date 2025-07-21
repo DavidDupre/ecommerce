@@ -10,48 +10,18 @@ const About = () => {
   const [error, setError] = useState('');
 
   const fetchTransactionData = async () => {
-    if (!trackingNumber) {
-      setError('Por favor ingrese un número de compra');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-    setTransactionData(null);
-
     try {
       const response = await axios.get(
-        `https://ec2-54-210-169-255.compute-1.amazonaws.com/api/transaction/${trackingNumber}`,
+        `https://ec2-54-210-169-255.compute-1.amazonaws.com/transaction/${trackingNumber}`,
         {
           headers: {
-            Accept: 'application/json',
             'Content-Type': 'application/json',
           },
         },
       );
-
-      if (response.data && response.data.data) {
-        setTransactionData(response.data.data);
-      } else {
-        setError('La respuesta del servidor no contiene datos válidos');
-      }
+      setTransactionData(response.data.data);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          // Error del servidor (4xx, 5xx)
-          setError(error.response.data.message || 'Error en la solicitud');
-        } else if (error.request) {
-          // No se recibió respuesta
-          setError('El servidor no respondió. Intente nuevamente.');
-        } else {
-          // Error al configurar la solicitud
-          setError('Error al realizar la solicitud');
-        }
-      } else {
-        setError('Ocurrió un error inesperado');
-      }
-    } finally {
-      setLoading(false);
+      setError('No se pudo encontrar la información de la compra.');
     }
   };
 
