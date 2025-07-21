@@ -1,5 +1,4 @@
-// src/infrastructure/persistence/typeorm/product.repository.spec.ts
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmProductRepository } from './product.repository';
@@ -8,121 +7,131 @@ import { Product } from '../../../core/entities/product.entity';
 
 describe('TypeOrmProductRepository', () => {
   let repository: TypeOrmProductRepository;
-  let mockOrmRepository: jest.Mocked<Repository<ProductOrmEntity>>;
+  let ormRepository: Repository<ProductOrmEntity>;
 
   beforeEach(async () => {
-    mockOrmRepository = {
-      createQueryBuilder: jest.fn(),
-      findOne: jest.fn(),
-      save: jest.fn(),
-    } as any;
-
-    const moduleRef = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       providers: [
         TypeOrmProductRepository,
         {
           provide: getRepositoryToken(ProductOrmEntity),
-          useValue: mockOrmRepository,
+          useValue: {
+            createQueryBuilder: jest.fn(() => ({
+              andWhere: jest.fn().mockReturnThis(),
+              getMany: jest.fn(),
+            })),
+            findOne: jest.fn(),
+            save: jest.fn(),
+          },
         },
       ],
     }).compile();
 
-    repository = moduleRef.get<TypeOrmProductRepository>(
-      TypeOrmProductRepository,
+    repository = module.get<TypeOrmProductRepository>(TypeOrmProductRepository);
+    ormRepository = module.get<Repository<ProductOrmEntity>>(
+      getRepositoryToken(ProductOrmEntity),
     );
   });
 
   describe('findAll', () => {
-    it('should return products with filters', async () => {
+    it('should find all products without filters', async () => {
       const mockProducts = [
         {
-          id: '1',
+          id: 'prod_1',
           name: 'Product 1',
-          description: 'Desc 1',
+          description: 'Description 1',
           price: 100,
           stock: 10,
-          category: 'category1',
+          category: 'Category 1',
         },
       ];
 
-      const mockQueryBuilder = {
-        andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue(mockProducts),
-      };
-
-      mockOrmRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder as any,
-      );
-
-      const result = await repository.findAll({
-        category: 'category1',
-        minPrice: 50,
-        maxPrice: 150,
-      });
-
-      expect(result).toEqual([
-        new Product('1', 'Product 1', 'Desc 1', 100, 10, 'category1'),
-      ]);
-
-      expect(mockQueryBuilder.andWhere).toHaveBeenCalledTimes(3);
-    });
-
-    it('should return products without filters', async () => {
-      const mockProducts = [
-        {
-          id: '1',
-          name: 'Product 1',
-          description: 'Desc 1',
-          price: 100,
-          stock: 10,
-          category: 'category1',
-        },
-      ];
-
-      const mockQueryBuilder = {
-        andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue(mockProducts),
-      };
-
-      mockOrmRepository.createQueryBuilder.mockReturnValue(
-        mockQueryBuilder as any,
-      );
+      (
+        ormRepository.createQueryBuilder().getMany as jest.Mock
+      ).mockResolvedValue(mockProducts);
 
       const result = await repository.findAll();
 
       expect(result).toEqual([
-        new Product('1', 'Product 1', 'Desc 1', 100, 10, 'category1'),
+        new Product(
+          'prod_1',
+          'Product 1',
+          'Description 1',
+          100,
+          10,
+          'Category 1',
+        ),
       ]);
+    });
 
-      expect(mockQueryBuilder.andWhere).not.toHaveBeenCalled();
+    it('should apply category filter', async () => {
+      const mockProducts = [
+        {
+          id: 'prod_1',
+          name: 'Product 1',
+          description: 'Description 1',
+          price: 100,
+          stock: 10,
+          category: 'Category 1',
+        },
+      ];
+
+      (
+        ormRepository.createQueryBuilder().getMany as jest.Mock
+      ).mockResolvedValue(mockProducts);
+
+      await repository.findAll({ category: 'Category 1' });
+
+      expect(ormRepository.createQueryBuilder().andWhere).toHaveBeenCalledWith(
+        'product.category = :category',
+        { category: 'Category 1' },
+      );
+    });
+
+    it('should apply price filters', async () => {
+      await repository.findAll({ minPrice: 50, maxPrice: 200 });
+
+      expect(ormRepository.createQueryBuilder().andWhere).toHaveBeenCalledWith(
+        'product.price >= :minPrice',
+        { minPrice: 50 },
+      );
+      expect(ormRepository.createQueryBuilder().andWhere).toHaveBeenCalledWith(
+        'product.price <= :maxPrice',
+        { maxPrice: 200 },
+      );
     });
   });
 
   describe('findById', () => {
-    it('should return a product by id', async () => {
+    it('should find product by id', async () => {
       const mockProduct = {
-        id: '1',
+        id: 'prod_1',
         name: 'Product 1',
-        description: 'Desc 1',
+        description: 'Description 1',
         price: 100,
         stock: 10,
-        category: 'category1',
+        category: 'Category 1',
       };
 
-      mockOrmRepository.findOne.mockResolvedValue(mockProduct);
+      (ormRepository.findOne as jest.Mock).mockResolvedValue(mockProduct);
 
-      const result = await repository.findById('1');
+      const result = await repository.findById('prod_1');
 
       expect(result).toEqual(
-        new Product('1', 'Product 1', 'Desc 1', 100, 10, 'category1'),
+        new Product(
+          'prod_1',
+          'Product 1',
+          'Description 1',
+          100,
+          10,
+          'Category 1',
+        ),
       );
     });
 
-    it('should return null when product not found', async () => {
-      mockOrmRepository.findOne.mockResolvedValue(null);
-
-      const result = await repository.findById('999');
-
+    it('should return null if product not found', async () => {
+      (ormRepository.findOne as jest.Mock).mockResolvedValue(null);
+      const result = await repository.findById('nonexistent');
       expect(result).toBeNull();
     });
   });
@@ -130,23 +139,23 @@ describe('TypeOrmProductRepository', () => {
   describe('save', () => {
     it('should save a product', async () => {
       const product = new Product(
-        '1',
+        'prod_1',
         'Product 1',
-        'Desc 1',
+        'Description 1',
         100,
         10,
-        'category1',
+        'Category 1',
       );
 
       await repository.save(product);
 
-      expect(mockOrmRepository.save).toHaveBeenCalledWith({
-        id: '1',
+      expect(ormRepository.save).toHaveBeenCalledWith({
+        id: 'prod_1',
         name: 'Product 1',
-        description: 'Desc 1',
+        description: 'Description 1',
         price: 100,
         stock: 10,
-        category: 'category1',
+        category: 'Category 1',
       });
     });
   });

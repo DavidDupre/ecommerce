@@ -1,5 +1,4 @@
-// src/infrastructure/persistence/typeorm/transaction.repository.spec.ts
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TypeOrmTransactionRepository } from './transaction.repository';
@@ -11,36 +10,37 @@ import {
 
 describe('TypeOrmTransactionRepository', () => {
   let repository: TypeOrmTransactionRepository;
-  let mockOrmRepository: jest.Mocked<Repository<TransactionOrmEntity>>;
+  let ormRepository: Repository<TransactionOrmEntity>;
 
   beforeEach(async () => {
-    mockOrmRepository = {
-      save: jest.fn(),
-      update: jest.fn(),
-      findOne: jest.fn(),
-    } as any;
-
-    const moduleRef = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       providers: [
         TypeOrmTransactionRepository,
         {
           provide: getRepositoryToken(TransactionOrmEntity),
-          useValue: mockOrmRepository,
+          useValue: {
+            save: jest.fn(),
+            update: jest.fn(),
+            findOne: jest.fn(),
+          },
         },
       ],
     }).compile();
 
-    repository = moduleRef.get<TypeOrmTransactionRepository>(
+    repository = module.get<TypeOrmTransactionRepository>(
       TypeOrmTransactionRepository,
+    );
+    ormRepository = module.get<Repository<TransactionOrmEntity>>(
+      getRepositoryToken(TransactionOrmEntity),
     );
   });
 
   describe('create', () => {
     it('should create a transaction', async () => {
       const transaction = new Transaction(
-        'txn-123',
-        [{ productId: '1', quantity: 2, price: 100, name: 'Product 1' }],
-        210,
+        'txn_123',
+        [{ productId: 'prod_1', quantity: 2, price: 50, name: 'Product 1' }],
+        100,
         TransactionStatus.PENDING,
         'test@example.com',
         'Test User',
@@ -56,13 +56,13 @@ describe('TypeOrmTransactionRepository', () => {
 
       await repository.create(transaction);
 
-      expect(mockOrmRepository.save).toHaveBeenCalledWith({
-        id: 'txn-123',
+      expect(ormRepository.save).toHaveBeenCalledWith({
+        id: 'txn_123',
         products: [
-          { productId: '1', quantity: 2, price: 100, name: 'Product 1' },
+          { productId: 'prod_1', quantity: 2, price: 50, name: 'Product 1' },
         ],
-        totalAmount: 210,
-        status: 'PENDING',
+        totalAmount: 100,
+        status: TransactionStatus.PENDING,
         customerEmail: 'test@example.com',
         customerName: 'Test User',
         deliveryAddress: '123 Street',
@@ -79,24 +79,23 @@ describe('TypeOrmTransactionRepository', () => {
 
   describe('updateStatus', () => {
     it('should update transaction status', async () => {
-      await repository.updateStatus('txn-123', TransactionStatus.APPROVED);
-
-      expect(mockOrmRepository.update).toHaveBeenCalledWith(
-        { id: 'txn-123' },
-        { status: 'APPROVED' },
+      await repository.updateStatus('txn_123', TransactionStatus.APPROVED);
+      expect(ormRepository.update).toHaveBeenCalledWith(
+        { id: 'txn_123' },
+        { status: TransactionStatus.APPROVED },
       );
     });
   });
 
   describe('findById', () => {
-    it('should find a transaction by id', async () => {
-      const mockTransaction = {
-        id: 'txn-123',
+    it('should find transaction by id', async () => {
+      const mockOrmEntity = {
+        id: 'txn_123',
         products: [
-          { productId: '1', quantity: 2, price: 100, name: 'Product 1' },
+          { productId: 'prod_1', quantity: 2, price: 50, name: 'Product 1' },
         ],
-        totalAmount: 210,
-        status: 'APPROVED',
+        totalAmount: 100,
+        status: TransactionStatus.PENDING,
         customerEmail: 'test@example.com',
         customerName: 'Test User',
         deliveryAddress: '123 Street',
@@ -109,46 +108,90 @@ describe('TypeOrmTransactionRepository', () => {
         updatedAt: new Date(),
       };
 
-      mockOrmRepository.findOne.mockResolvedValue(mockTransaction);
+      (ormRepository.findOne as jest.Mock).mockResolvedValue(mockOrmEntity);
 
-      const result = await repository.findById('txn-123');
+      const result = await repository.findById('txn_123');
 
       expect(result).toEqual(
         new Transaction(
-          'txn-123',
-          [{ productId: '1', quantity: 2, price: 100, name: 'Product 1' }],
-          210,
-          'APPROVED',
+          'txn_123',
+          [{ productId: 'prod_1', quantity: 2, price: 50, name: 'Product 1' }],
+          100,
+          TransactionStatus.PENDING,
           'test@example.com',
           'Test User',
           '123 Street',
           'Bogota',
           '110111',
           '1234567890',
-          mockTransaction.createdAt,
-          mockTransaction.updatedAt,
+          mockOrmEntity.createdAt,
+          mockOrmEntity.updatedAt,
           10,
           'WM123456',
         ),
       );
     });
 
-    it('should return null when transaction not found', async () => {
-      mockOrmRepository.findOne.mockResolvedValue(null);
-
-      const result = await repository.findById('txn-999');
-
+    it('should return null if transaction not found', async () => {
+      (ormRepository.findOne as jest.Mock).mockResolvedValue(null);
+      const result = await repository.findById('nonexistent');
       expect(result).toBeNull();
+    });
+  });
+
+  describe('findByTrackingNumber', () => {
+    it('should find transaction by tracking number', async () => {
+      const mockOrmEntity = {
+        id: 'txn_123',
+        products: [
+          { productId: 'prod_1', quantity: 2, price: 50, name: 'Product 1' },
+        ],
+        totalAmount: 100,
+        status: TransactionStatus.PENDING,
+        customerEmail: 'test@example.com',
+        customerName: 'Test User',
+        deliveryAddress: '123 Street',
+        city: 'Bogota',
+        postalCode: '110111',
+        phoneNumber: '1234567890',
+        shippingCost: 10,
+        trackingNumber: 'WM123456',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      (ormRepository.findOne as jest.Mock).mockResolvedValue(mockOrmEntity);
+
+      const result = await repository.findByTrackingNumber('WM123456');
+
+      expect(result).toEqual(
+        new Transaction(
+          'txn_123',
+          [{ productId: 'prod_1', quantity: 2, price: 50, name: 'Product 1' }],
+          100,
+          TransactionStatus.PENDING,
+          'test@example.com',
+          'Test User',
+          '123 Street',
+          'Bogota',
+          '110111',
+          '1234567890',
+          mockOrmEntity.createdAt,
+          mockOrmEntity.updatedAt,
+          10,
+          'WM123456',
+        ),
+      );
     });
   });
 
   describe('generateTrackingNumber', () => {
     it('should generate a tracking number', async () => {
-      jest.spyOn(Math, 'random').mockReturnValue(0.5); // Mock random number
+      jest.spyOn(Math, 'random').mockReturnValue(0.5);
+      jest.spyOn(Date.prototype, 'getTime').mockReturnValue(1234567890123);
 
-      const trackingNumber = await repository.generateTrackingNumber();
-
-      expect(trackingNumber).toMatch(/^WM\d{12}$/);
+      const result = await repository.generateTrackingNumber();
+      expect(result).toMatch(/^WM\d{12}$/);
     });
   });
 });
