@@ -7,7 +7,7 @@ import { TypeOrmTransactionRepository } from './infrastructure/persistence/typeo
 import { ProductOrmEntity } from './infrastructure/persistence/typeorm/product.orm-entity';
 import { TransactionOrmEntity } from './infrastructure/persistence/typeorm/transaction.orm-entity';
 import { ConfigModule } from '@nestjs/config';
-import { PaymentAdapter } from '@infrastructure/adapters/payment.adapter';
+import { PaymentAdapter } from './infrastructure/adapters/payment.adapter';
 
 @Module({
   imports: [
