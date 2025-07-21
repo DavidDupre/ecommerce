@@ -8,6 +8,7 @@ import { ProductOrmEntity } from './infrastructure/persistence/typeorm/product.o
 import { TransactionOrmEntity } from './infrastructure/persistence/typeorm/transaction.orm-entity';
 import { ConfigModule } from '@nestjs/config';
 import { PaymentAdapter } from './infrastructure/adapters/payment.adapter';
+import { ProductController } from '@infrastructure/web/product.controller';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { PaymentAdapter } from './infrastructure/adapters/payment.adapter';
     }),
     TypeOrmModule.forFeature([ProductOrmEntity, TransactionOrmEntity]),
   ],
-  controllers: [TransactionController],
+  controllers: [TransactionController, ProductController],
   providers: [
     ProcessPaymentUseCase,
     {
