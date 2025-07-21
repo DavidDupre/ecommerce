@@ -20,7 +20,12 @@ const About = () => {
 
     try {
       const response = await axios.get(
-        `http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/transaction/${trackingNumber}`,
+        `https://ec2-54-210-169-255.compute-1.amazonaws.com/transaction/${trackingNumber}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
       );
 
       setTransactionData(response.data.data);
