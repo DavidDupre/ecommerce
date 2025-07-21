@@ -120,7 +120,6 @@ const PaymentModal = ({ onClose, onPay }) => {
       [name]: processedValue,
     }));
 
-    // Reset validation if fields change
     if (validated) {
       setValidated(false);
       setToken(null);
@@ -190,8 +189,6 @@ const PaymentModal = ({ onClose, onPay }) => {
             Tarjeta validada correctamente
           </div>
         )}
-
-        <CreditCardPreview {...state} />
 
         <form
           onSubmit={handlePay}
