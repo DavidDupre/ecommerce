@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import ProductListView from '../../components/ProductList/ProductListView';
+import axios from 'axios';
 
 const CategoryProduct = () => {
   const [searchData, setSearchData] = useState([]);
@@ -11,7 +12,9 @@ const CategoryProduct = () => {
 
   const getFilterData = async () => {
     try {
-      // const res = await axios.get(`https://fakestoreapi.in/api/products/category?type=${category}`);
+      const res = await axios.get(
+        `http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/products/category/${category}`,
+      );
       const data = res.data.products;
       setSearchData(data);
     } catch (error) {

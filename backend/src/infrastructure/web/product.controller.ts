@@ -11,7 +11,18 @@ export class ProductController {
 
   @Get()
   async getProducts(
-    @Query('category') category?: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+  ) {
+    return this.productRepository.findAll({
+      minPrice: minPrice ? parseFloat(minPrice) : undefined,
+      maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
+    });
+  }
+
+  @Get('category/:category')
+  async getProductsByCategory(
+    @Param('category') category: string,
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
   ) {

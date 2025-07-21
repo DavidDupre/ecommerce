@@ -169,8 +169,28 @@ const PaymentModal = ({ onClose, onPay }) => {
         throw new Error('Por favor valida la tarjeta primero');
       }
 
-      await onPay({ card_token: token });
-      onClose();
+      // Llamada al backend para procesar el pago
+      const response = await fetch(
+        'http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/transaction',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            token_id: token,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message || 'Pago procesado correctamente');
+        onClose(); // Cerrar modal o continuar con el flujo
+      } else {
+        throw new Error(data.error || 'Error procesando el pago');
+      }
     } catch (err) {
       setError(err.message || 'Error procesando el pago');
     } finally {

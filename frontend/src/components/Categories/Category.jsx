@@ -1,14 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { getData } from '../../context/DataContext';
 
 const Category = () => {
   const navigate = useNavigate();
-  const getData = [
-    { id: 1, content: 'Slide 1', title: 'Welcome to Our Site', category: 'audio' },
-    { id: 2, content: 'Slide 2', title: 'Discover Our Features', category: 'gaming' },
-    { id: 3, content: 'Slide 3', title: 'Mobile Products', category: 'mobile' },
-    { id: 4, content: 'Slide 4', title: 'TV Collection', category: 'tv' },
-    { id: 5, content: 'Slide 5', title: 'Laptops Gallery', category: 'laptop' },
-  ];
+  const { data } = getData();
 
   const getUniqueCategory = (data, property) => {
     let newVal = data?.map((curElem) => {
@@ -18,7 +13,7 @@ const Category = () => {
     return newVal;
   };
 
-  const categoryOnlyData = getUniqueCategory(getData, 'category');
+  const categoryOnlyData = getUniqueCategory(data, 'category');
 
   return (
     <div className="bg-[#101829]">

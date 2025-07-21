@@ -43,6 +43,7 @@ export class ProcessPaymentUseCase {
 
         productsWithDetails.push({
           productId: product.id,
+          name: product.name,
           quantity: item.quantity,
           price: product.price,
         });
@@ -90,6 +91,7 @@ export class ProcessPaymentUseCase {
           city: command.city,
           region: command.region,
           postalCode: command.postalCode,
+          phoneNumber: command.phoneNumber,
         },
       );
 

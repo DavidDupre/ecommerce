@@ -9,10 +9,11 @@ export const DataProvider = ({ children }) => {
   // fetching all products from api
   const fetchAllProducts = async () => {
     try {
-      const res = await axios.get('https://fakestoreapi.in/api/products?limit=150');
+      const res = await axios.get(
+        'http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/products',
+      );
       console.log(res);
-      const productsData = res.data.products;
-      setData(productsData);
+      setData(res.data);
     } catch (error) {
       console.log(error);
     }

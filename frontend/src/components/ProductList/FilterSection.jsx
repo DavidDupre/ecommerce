@@ -54,7 +54,7 @@ const FilterSection = ({
         value={brand}
         onChange={handleBrandChange}
       >
-        {brandOnlyData?.map((item, index) => {
+        {brandOnlyData?.filter(Boolean).map((item, index) => {
           return (
             <option
               key={index}

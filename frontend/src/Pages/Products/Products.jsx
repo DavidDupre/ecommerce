@@ -35,14 +35,15 @@ const Products = () => {
     window.scrollTo(0, 0);
   };
 
-  const filteredData = data?.filter(
-    (item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()) &&
-      (category === 'All' || item.category === category) &&
-      (brand === 'All' || item.brand === brand) &&
-      item.price >= priceRange[0] &&
-      item.price <= priceRange[1],
-  );
+  const filteredData =
+    data?.filter(
+      (item) =>
+        item.name.toLowerCase().includes(search.toLowerCase()) && // Cambia title → name
+        (category === 'All' || item.category === category) &&
+        (brand === 'All' || item.brand === brand) &&
+        Number(item.price) >= priceRange[0] && // Convierte price a número
+        Number(item.price) <= priceRange[1],
+    ) || []; // Si data es undefined, usa array vacío
   const dynamicPage = Math.ceil(filteredData?.length / 8);
 
   return (

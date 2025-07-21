@@ -10,6 +10,7 @@ export class TransactionOrmEntity {
     productId: string;
     quantity: number;
     price: number;
+    name: string;
   }>;
 
   @Column('decimal', { precision: 10, scale: 2 })

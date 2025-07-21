@@ -13,6 +13,7 @@ export interface PaymentService {
       city: string;
       region: string;
       postalCode?: string;
+      phoneNumber: string;
     },
   ): Promise<{
     success: boolean;

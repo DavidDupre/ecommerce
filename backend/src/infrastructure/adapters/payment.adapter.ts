@@ -6,12 +6,13 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class PaymentAdapter implements PaymentService {
-  private readonly baseUrl: string;
+  private readonly baseUrl?: string;
   private readonly publicKey: string;
   private readonly privateKey: string;
   private readonly integrityKey: string;
 
   constructor(private readonly configService: ConfigService) {
+    const baseUrl = this.configService.get<string>('WOMPI_SANDBOX_URL');
     const publicKey = this.configService.get<string>('WOMPI_PUBLIC_KEY');
     const privateKey = this.configService.get<string>('WOMPI_PRIVATE_KEY');
     const integrityKey = this.configService.get<string>('WOMPI_INTEGRITY_KEY');
@@ -20,6 +21,7 @@ export class PaymentAdapter implements PaymentService {
       throw new Error('Missing Wompi configuration keys');
     }
 
+    this.baseUrl = baseUrl;
     this.publicKey = publicKey;
     this.privateKey = privateKey;
     this.integrityKey = integrityKey;
@@ -39,6 +41,7 @@ export class PaymentAdapter implements PaymentService {
       city: string;
       region: string;
       postalCode?: string;
+      phoneNumber: string;
     },
   ): Promise<{
     success: boolean;
@@ -47,10 +50,10 @@ export class PaymentAdapter implements PaymentService {
     error?: string;
   }> {
     try {
-      // 1. Obtener token de aceptación
+      // 1. Get acceptance token
       const acceptanceToken = await this.getAcceptanceToken();
 
-      // 2. Preparar payload con firma
+      // 2. Prepare payload with proper shipping address format
       const amountInCents = Math.round(amount * 100);
       const payload = {
         acceptance_token: acceptanceToken,
@@ -66,19 +69,21 @@ export class PaymentAdapter implements PaymentService {
         customer_data: {
           full_name: customerData.fullName,
           phone_number: customerData.phoneNumber,
-          legal_id: '1234567890',
-          legal_id_type: 'CC',
+          legal_id: '1234567890', // Required field (dummy value)
+          legal_id_type: 'CC', // Required field (CC = Cédula de Ciudadanía)
         },
         shipping_address: {
           address_line_1: shippingAddress.addressLine1,
           city: shippingAddress.city,
           region: shippingAddress.region,
-          country: 'CO',
+          country: 'CO', // Required by Wompi
           postal_code: shippingAddress.postalCode || '000000',
+          phone_number: shippingAddress.phoneNumber,
         },
         signature: this.calculateSignature(reference, amountInCents, 'COP'),
       };
 
+      // 3. Make the request to Wompi
       const response = await axios.post(
         `${this.baseUrl}/transactions`,
         payload,
@@ -90,18 +95,19 @@ export class PaymentAdapter implements PaymentService {
         },
       );
 
-      const TransactionResponse = response.data.data;
+      // 4. Process response
+      const transactionResponse = response.data.data;
       const isSuccess = ['APPROVED', 'PENDING'].includes(
-        TransactionResponse.status,
+        transactionResponse.status,
       );
 
       return {
         success: isSuccess,
-        transactionId: TransactionResponse.id,
-        status: TransactionResponse.status,
+        transactionId: transactionResponse.id,
+        status: transactionResponse.status,
         error: isSuccess
           ? undefined
-          : TransactionResponse.status_message || 'Payment failed',
+          : transactionResponse.status_message || 'Payment failed',
       };
     } catch (error) {
       console.error(
@@ -138,10 +144,29 @@ export class PaymentAdapter implements PaymentService {
   }
 
   private parseError(error: any): string {
-    if (!error.response) return 'Error de conexión con el servidor de pagos';
+    if (!error.response) {
+      return 'Connection error with payment server';
+    }
+
+    // Enhanced error logging
+    console.log(
+      'Full error response:',
+      JSON.stringify(error.response.data, null, 2),
+    );
 
     const paymentError = error.response.data?.error;
-    if (!paymentError) return 'Error desconocido en el procesamiento del pago';
+    if (!paymentError) {
+      return 'Unknown error in payment processing';
+    }
+
+    // Handle shipping address validation errors specifically
+    if (paymentError.messages?.shipping_address) {
+      const addressErrors = paymentError.messages.shipping_address;
+      if (Array.isArray(addressErrors)) {
+        return `Shipping address errors: ${addressErrors.join(', ')}`;
+      }
+      return `Shipping address error: ${JSON.stringify(addressErrors)}`;
+    }
 
     if (paymentError.messages) {
       if (Array.isArray(paymentError.messages)) {
@@ -150,6 +175,6 @@ export class PaymentAdapter implements PaymentService {
       return String(paymentError.messages);
     }
 
-    return paymentError.message || `Error en el pago: ${paymentError.type}`;
+    return paymentError.message || `Payment error: ${paymentError.type}`;
   }
 }

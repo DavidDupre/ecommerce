@@ -12,6 +12,7 @@ export class Transaction {
       productId: string;
       quantity: number;
       price: number;
+      name: string;
     }>,
     public totalAmount: number,
     public status: TransactionStatus,

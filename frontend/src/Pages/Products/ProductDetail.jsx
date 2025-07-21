@@ -13,7 +13,9 @@ const ProductDetail = () => {
 
   const getSingleProduct = async () => {
     try {
-      const res = await axios.get(`https://fakestoreapi.in/api/products/${params.id}`);
+      const res = await axios.get(
+        `http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/products/${params.id}`,
+      );
       const product = res.data.product;
       setProduct(product);
       console.log(product);
