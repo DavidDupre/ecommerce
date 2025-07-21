@@ -9,13 +9,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 3000;
 
-  // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('API de Pagos')
     .setDescription('Sistema de procesamiento de transacciones de pagos')
     .setVersion('1.0')
     .addTag('transactions', 'Operaciones con transacciones')
-    .addBearerAuth() // Si usas autenticación JWT
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
