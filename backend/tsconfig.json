@@ -9,7 +9,7 @@
     "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": ".",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
@@ -21,9 +21,9 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "paths": {
-      "@core/*": ["core/*"],
-      "@infrastructure/*": ["infrastructure/*"],
-      "@shared/*": ["shared/*"]
+      "@core/*": ["src/core/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@shared/*": ["src/shared/*"]
     }
   },
   "include": ["src/**/*"],
