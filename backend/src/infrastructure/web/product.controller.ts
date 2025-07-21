@@ -2,7 +2,7 @@
 import { ProductRepository } from '../../core/ports/product.repository.port';
 import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 
-@Controller('productos')
+@Controller('products')
 export class ProductController {
   constructor(
     @Inject('ProductRepository')
