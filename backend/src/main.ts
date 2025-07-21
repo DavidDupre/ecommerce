@@ -25,7 +25,6 @@ async function bootstrap() {
     },
   });
 
-  // Configura CORS para desarrollo
   app.enableCors({
     origin: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

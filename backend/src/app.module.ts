@@ -8,7 +8,7 @@ import { ProductOrmEntity } from './infrastructure/persistence/typeorm/product.o
 import { TransactionOrmEntity } from './infrastructure/persistence/typeorm/transaction.orm-entity';
 import { ConfigModule } from '@nestjs/config';
 import { PaymentAdapter } from './infrastructure/adapters/payment.adapter';
-import { ProductController } from '@infrastructure/web/product.controller';
+import { ProductController } from '../src/infrastructure/web/product.controller';
 
 @Module({
   imports: [
