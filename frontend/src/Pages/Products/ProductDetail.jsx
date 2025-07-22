@@ -13,7 +13,7 @@ const ProductDetail = () => {
 
   const getSingleProduct = async () => {
     try {
-      const res = await axios.get(`http://54-210-169-255.nip.io/products/${params.id}`);
+      const res = await axios.get(`http://54-210-169-255/products/${params.id}`);
       const product = res.data.product;
       setProduct(product);
       console.log(product);

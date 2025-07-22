@@ -13,15 +13,12 @@ const About = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(
-        `http://54-210-169-255.nip.io/transaction/${trackingNumber}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-          },
+      const response = await axios.get(`http://54-210-169-255/transaction/${trackingNumber}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
         },
-      );
+      });
       setTransactionData(response.data.data);
     } catch (error) {
       console.error('Error:', error);
