@@ -9,9 +9,7 @@ export const DataProvider = ({ children }) => {
   // fetching all products from api
   const fetchAllProducts = async () => {
     try {
-      const res = await axios.get(
-        'http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/products',
-      );
+      const res = await axios.get('http://54-210-169-255.nip.io/products');
       console.log(res);
       setData(res.data);
     } catch (error) {

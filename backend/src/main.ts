@@ -26,9 +26,16 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: [
+      'http://localhost:5173',
+      'http://ec2-54-210-169-255.compute-1.amazonaws.com',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean),
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization,X-Requested-With',
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   await app.listen(port);

@@ -10,18 +10,24 @@ const About = () => {
   const [error, setError] = useState('');
 
   const fetchTransactionData = async () => {
+    setLoading(true);
+    setError('');
     try {
       const response = await axios.get(
-        `https://ec2-54-210-169-255.compute-1.amazonaws.com/transaction/${trackingNumber}`,
+        `http://54-210-169-255.nip.io/transaction/${trackingNumber}`,
         {
           headers: {
             'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
           },
         },
       );
       setTransactionData(response.data.data);
     } catch (error) {
+      console.error('Error:', error);
       setError('No se pudo encontrar la información de la compra.');
+    } finally {
+      setLoading(false);
     }
   };
 
