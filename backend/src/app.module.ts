@@ -21,7 +21,7 @@ import { ProductController } from '../src/infrastructure/web/product.controller'
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       entities: [ProductOrmEntity, TransactionOrmEntity],
-      synchronize: true,
+      synchronize: false,
     }),
     TypeOrmModule.forFeature([ProductOrmEntity, TransactionOrmEntity]),
   ],

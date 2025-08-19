@@ -1,7 +1,8 @@
-// src/infrastructure/web/product.controller.ts
 import { ProductRepository } from '../../core/ports/product.repository.port';
 import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('products')
 @Controller('products')
 export class ProductController {
   constructor(
@@ -10,6 +11,8 @@ export class ProductController {
   ) {}
 
   @Get()
+  @ApiQuery({ name: 'minPrice', required: false, type: Number })
+  @ApiQuery({ name: 'maxPrice', required: false, type: Number })
   async getProducts(
     @Query('minPrice') minPrice?: string,
     @Query('maxPrice') maxPrice?: string,
@@ -21,6 +24,8 @@ export class ProductController {
   }
 
   @Get('category/:category')
+  @ApiQuery({ name: 'minPrice', required: false, type: Number })
+  @ApiQuery({ name: 'maxPrice', required: false, type: Number })
   async getProductsByCategory(
     @Param('category') category: string,
     @Query('minPrice') minPrice?: string,

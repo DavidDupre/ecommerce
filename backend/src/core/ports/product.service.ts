@@ -11,6 +11,6 @@ export class ProductsService {
   ) {}
 
   findAll() {
-    return this.repo.find(); // Debe devolver todos los productos
+    return this.repo.find();
   }
 }
