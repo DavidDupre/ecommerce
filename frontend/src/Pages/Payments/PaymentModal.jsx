@@ -171,7 +171,7 @@ const PaymentModal = ({ onClose, onPay }) => {
 
       // Llamada al backend para procesar el pago
       const response = await fetch(
-        'http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/transaction',
+        'http://ec2-3-14-72-122.us-east-2.compute.amazonaws.com:3000/transaction',
         {
           method: 'POST',
           headers: {
