@@ -10,7 +10,7 @@ export const DataProvider = ({ children }) => {
   const fetchAllProducts = async () => {
     try {
       const res = await axios.get(
-        'http://ec2-54-210-169-255.compute-1.amazonaws.com:3000/products',
+        'http://ec2-3-14-72-122.us-east-2.compute.amazonaws.com:3000/products',
       );
       console.log(res);
       setData(res.data);

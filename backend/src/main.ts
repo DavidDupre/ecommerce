@@ -28,7 +28,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:5173',
-      'http://ec2-54-210-169-255.compute-1.amazonaws.com',
+      'http://ec2-3-14-72-122.us-east-2.compute.amazonaws.com',
       process.env.FRONTEND_URL,
     ].filter(Boolean),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
