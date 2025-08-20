@@ -32,7 +32,7 @@ async function bootstrap() {
       process.env.FRONTEND_URL,
     ].filter(Boolean),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type,Authorization,X-Requested-With',
+    allowedHeaders: '*',
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
