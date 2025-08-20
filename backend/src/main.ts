@@ -30,6 +30,7 @@ async function bootstrap() {
       'http://localhost:5173',
       'http://ec2-3-14-72-122.us-east-2.compute.amazonaws.com',
       'http://3.14.72.122:44333',
+      'http://3.14.72.122:5173',
       process.env.FRONTEND_URL,
     ].filter(Boolean),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
