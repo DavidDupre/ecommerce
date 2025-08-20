@@ -39,7 +39,7 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   Logger.log(`🚀 Application running on: http://localhost:${port}`);
   Logger.log(`📄 Swagger docs available on: http://localhost:${port}/api-docs`);
