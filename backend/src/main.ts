@@ -29,10 +29,11 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://ec2-3-14-72-122.us-east-2.compute.amazonaws.com',
+      'http://3.14.72.122:44333',
       process.env.FRONTEND_URL,
     ].filter(Boolean),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    allowedHeaders: '*',
+    allowedHeaders: 'Content-Type,Authorization,X-Requested-With',
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
